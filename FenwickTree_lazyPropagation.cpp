@@ -26,16 +26,57 @@ vector<ll>seive(int n){//will return all the prime numbers till n(included)
     }return res;
 }
 
+
 struct ST{//will return the sum of the elements in the given range
+private:
+    void operate1(vector<ll>&seg,int&index){
+        if(state==0){ // Tree for sumation
+            seg[index]=seg[2*index+1]+seg[2*index+2];
+
+        }else if(state==1){ // Tree for minimum return
+            seg[index]=min(seg[2*index+1],seg[2*index+2]);   
+
+        }else if(state==2){ // Tree for maximum return 
+            seg[index]=max(seg[2*index+1],seg[2*index+2]);
+
+        }else if(state==3){ // Tree for GCD 
+            seg[index]=gcd(seg[2*index+1],seg[2*index+2]);
+
+        }else if(state==4){ // Tree for XOR
+            seg[index]=seg[2*index+1]^seg[2*index+2];
+        }
+    }
+
+    ll operate2(ll&left,ll&right){
+        if(state==0){ // Tree for sumation
+            return left+right;
+
+        }else if(state==1){ // Tree for minimum return  
+            return min(left,right);
+
+        }else if(state==2){ // Tree for maximum return 
+            return max(left,right);
+
+        }else if(state==3){ // Tree for GCD 
+            return gcd(left,right);
+
+        }else if(state==4){ // Tree for XOR
+            return left^right;
+        }
+
+        return -1;
+    }
 
 public: 
     vector<ll>seg,lazy;
+    int state;
 
-    ST(int n){
+    ST(int _n,int _state){
 
         //taking the size of the segment array as 4*n+5 for safe measures
-        seg.resize(4*n+5);
-        lazy.resize(4*n+5,0);
+        seg.resize(4*_n+5);
+        lazy.resize(4*_n+5,0);
+        state=_state;
     }
 
     void build(int index,int low,int high,vector<int>&arr){
@@ -50,7 +91,9 @@ public:
         build(2*index+1,low,mid,arr);
         build(2*index+2,mid+1,high,arr);
 
-        seg[index]=seg[2*index+1]+seg[2*index+2];
+        //seg[index]=seg[2*index+1]+seg[2*index+2];
+
+        operate1(seg,index);
     }
 
     void update(int index,int low,int high,int l,int r,int val){
@@ -99,7 +142,9 @@ public:
         update(2*index+1,low,mid,l,r,val);
         update(2*index+2,mid+1,high,l,r,val);
 
-        seg[index]=seg[2*index+1]+seg[2*index+2];
+        //seg[index]=seg[2*index+1]+seg[2*index+2];
+
+        operate1(seg,index);
     }
 
     ll query(int index,int low,int high,int l,int r){
@@ -142,17 +187,19 @@ public:
         ll left=query(2*index+1,low,mid,l,r);
         ll right=query(2*index+2,mid+1,high,l,r);
 
-        return left+right;
+        //return left+right;
+
+        operate2(left,right);
     }
 };
 
 int main(){
 
-int n,q;cin>>n>>q;
+int n,q,state;cin>>n>>q>>state;
 vector<int>arr(n);
 for(int i=0;i<n;i++)cin>>arr[i];
 
-ST st(n);
+ST st(n,state);
 st.build(0,0,n-1,arr);
 
 while(q--){
