@@ -29,7 +29,7 @@ vector<ll>seive(int n){//will return all the prime numbers till n(included)
 
 struct ST{//will return the sum of the elements in the given range
 private:
-    void operate1(vector<ll>&seg,int&index){
+    void operate1(int&index){
         if(state==0){ // Tree for sumation
             seg[index]=seg[2*index+1]+seg[2*index+2];
 
@@ -93,7 +93,7 @@ public:
 
         //seg[index]=seg[2*index+1]+seg[2*index+2];
 
-        operate1(seg,index);
+        operate1(index);
     }
 
     void update(int index,int low,int high,int l,int r,int val){
@@ -144,7 +144,7 @@ public:
 
         //seg[index]=seg[2*index+1]+seg[2*index+2];
 
-        operate1(seg,index);
+        operate1(index);
     }
 
     ll query(int index,int low,int high,int l,int r){
@@ -198,6 +198,10 @@ int main(){
 int n,q,state;cin>>n>>q>>state;
 vector<int>arr(n);
 for(int i=0;i<n;i++)cin>>arr[i];
+
+//or else if we do not want to make the prompt for the state 
+//of the segment tree, we can pass the number while building 
+//the tree itself.
 
 ST st(n,state);
 st.build(0,0,n-1,arr);
